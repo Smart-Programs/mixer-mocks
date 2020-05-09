@@ -7,7 +7,7 @@ ws.on('open', () => {
     JSON.stringify({
       type: 'method',
       method: 'auth',
-      arguments: [12345, 11111, 'test'],
+      arguments: [12345],
       id: 0
     })
   )
