@@ -18,8 +18,9 @@ module.exports.getRandomUsername = () => {
 
 module.exports.broadcastMessage = (ws, data, channel) => {
   ws.clients.forEach(client => {
-    if (channel && client.readyState === WebSocket.OPEN) {
-      if (client.channel === channel) client.send(data)
-    } else if (client.readyState === WebSocket.OPEN) client.send(data)
+    if (channel && client.readyState === 1) {
+      if (client.connection && client.connection.channel === channel)
+        client.send(data)
+    } else if (client.readyState === 1) client.send(data)
   })
 }
