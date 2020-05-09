@@ -1,7 +1,11 @@
 const WebSocket = require('ws')
 const ws = new WebSocket.Server({ port: 8050 })
 
-const { handleLiveSubscribe, handlePing } = require('../handlers/constellation')
+const {
+  handleLiveSubscribe,
+  handleLiveUnsubscribe,
+  handlePing
+} = require('../handlers/constellation')
 
 ws.on('connection', (client, request) => {
   client.on('message', message => {
@@ -12,6 +16,10 @@ ws.on('connection', (client, request) => {
           case 'liveSubscribe':
             console.log('Constellation method handleLiveSubscribe', data)
             handleLiveSubscribe(client, data)
+            break
+          case 'liveUnsubscribe':
+            console.log('Constellation method handleLiveUnsubscribe', data)
+            handleLiveUnsubscribe(client, data)
             break
           case 'ping':
             console.log('Constellation method handlePing', data)
