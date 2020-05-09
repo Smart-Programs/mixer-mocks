@@ -13,6 +13,8 @@ const {
   handlePing
 } = require('../handlers/chat')
 
+const { broadcastMessage } = require('../helpers')
+
 ws.on('connection', client => {
   client.send(
     JSON.stringify({
@@ -97,6 +99,29 @@ ws.on('connection', client => {
           note: 'The message failed to parse :)',
           id: 'unknown'
         })
+      )
+    }
+  })
+
+  client.on('close', () => {
+    if (
+      client.connection &&
+      client.connection.channel &&
+      client.connection.auth &&
+      client.connection.auth.authenticated === true
+    ) {
+      broadcastMessage(
+        ws,
+        JSON.stringify({
+          type: 'event',
+          event: 'UserLeave',
+          data: {
+            originatingChannel: client.connection.channel,
+            username: client.connection.user_name,
+            id: client.connection.user_id
+          }
+        }),
+        client.connection.channel
       )
     }
   })

@@ -5,7 +5,7 @@ module.exports = function handleDeleteMessage (client, data, ws) {
     !client.connection ||
     !client.connection.channel ||
     !client.connection.auth ||
-    !client.connection.auth.authenticated === true
+    client.connection.auth.authenticated !== true
   ) {
     client.send(
       JSON.stringify({

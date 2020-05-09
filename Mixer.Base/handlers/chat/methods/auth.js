@@ -1,10 +1,10 @@
-const { getRandomUsername } = require('../../../helpers')
+const { getRandomUsername, broadcastMessage } = require('../../../helpers')
 
-module.exports = function handleAuth (client, data) {
+module.exports = function handleAuth (client, data, ws) {
   if (
     client.connection &&
     client.connection.auth &&
-    Object.keys(client.connection.auth) !== 0
+    client.connection.auth.authenticated === true
   ) {
     client.send(
       JSON.stringify({
@@ -72,6 +72,22 @@ module.exports = function handleAuth (client, data) {
             authenticated: true
           }
         }
+
+        broadcastMessage(
+          ws,
+          JSON.stringify({
+            type: 'event',
+            event: 'UserJoin',
+            data: {
+              originatingChannel: client.connection.channel,
+              username: client.connection.user_name,
+              roles: client.connection.auth.roles,
+              id: client.connection.user_id
+            }
+          }),
+          client.connection.channel
+        )
+
         client.send(
           JSON.stringify({
             type: 'reply',
