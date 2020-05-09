@@ -8,7 +8,9 @@ const {
   handleTimeout,
   handlePurge,
   handleDeleteMessage,
-  handleClearMessages
+  handleClearMessages,
+  handleHistory,
+  handlePing
 } = require('../handlers/chat')
 
 ws.on('connection', client => {
@@ -54,6 +56,14 @@ ws.on('connection', client => {
           case 'clearMessages':
             console.log('Chat method handleClearMessages', data)
             handleClearMessages(client, data, ws)
+            break
+          case 'history':
+            console.log('Chat method handleHistory', data)
+            handleHistory(client, data, ws)
+            break
+          case 'ping':
+            console.log('Chat method handlePing', data)
+            handlePing(client, data, ws)
             break
           default:
             console.log('Chat method switch-default', data)
