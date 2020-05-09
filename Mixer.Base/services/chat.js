@@ -12,6 +12,16 @@ const {
 } = require('../handlers/chat')
 
 ws.on('connection', client => {
+  client.send(
+    JSON.stringify({
+      type: 'event',
+      event: 'WelcomeEvent',
+      data: {
+        server: 'fuck-servers'
+      }
+    })
+  )
+
   client.on('message', message => {
     try {
       const data = JSON.parse(message)
@@ -19,31 +29,31 @@ ws.on('connection', client => {
         switch (data.method) {
           case 'auth':
             console.log('Chat method handleAuth', data)
-            handleAuth(client, data)
+            handleAuth(client, data, ws)
             break
           case 'msg':
             console.log('Chat method handleMsg', data)
-            handleMsg(client, data)
+            handleMsg(client, data, ws)
             break
           case 'whisper':
             console.log('Chat method handleWhisper', data)
-            handleWhisper(client, data)
+            handleWhisper(client, data, ws)
             break
           case 'timeout':
             console.log('Chat method handleTimeout', data)
-            handleTimeout(client, data)
+            handleTimeout(client, data, ws)
             break
           case 'purge':
             console.log('Chat method handlePurge', data)
-            handlePurge(client, data)
+            handlePurge(client, data, ws)
             break
           case 'deleteMessage':
             console.log('Chat method handleDeleteMessage', data)
-            handleDeleteMessage(client, data)
+            handleDeleteMessage(client, data, ws)
             break
           case 'clearMessages':
             console.log('Chat method handleClearMessages', data)
-            handleClearMessages(client, data)
+            handleClearMessages(client, data, ws)
             break
           default:
             console.log('Chat method switch-default', data)

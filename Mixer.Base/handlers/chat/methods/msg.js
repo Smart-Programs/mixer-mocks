@@ -1,6 +1,8 @@
 const { v4: uuidv4 } = require('uuid')
 
-module.exports = function handleMsg (client, data) {
+const { broadcastMessage } = require('../../../helpers')
+
+module.exports = function handleMsg (client, data, ws) {
   if (
     !client.connection ||
     !client.connection.channel ||
@@ -37,6 +39,16 @@ module.exports = function handleMsg (client, data) {
           meta: {}
         }
       }
+
+      broadcastMessage(
+        ws,
+        JSON.stringify({
+          type: 'event',
+          event: 'ChatMessage',
+          data: sendMessage
+        }),
+        client.connection.channel
+      )
 
       client.send(
         JSON.stringify({

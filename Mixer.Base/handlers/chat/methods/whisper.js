@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid')
 
-const { getRandomUsername } = require('../../../helpers')
+const { getRandomUsername, broadcastMessage } = require('../../../helpers')
 
 module.exports = function handleWhisper (client, data) {
   if (
@@ -49,6 +49,16 @@ module.exports = function handleWhisper (client, data) {
         },
         target: whisperTarget
       }
+
+      broadcastMessage(
+        ws,
+        JSON.stringify({
+          type: 'event',
+          event: 'ChatMessage',
+          data: sendWhisper
+        }),
+        client.connection.channel
+      )
 
       client.send(
         JSON.stringify({

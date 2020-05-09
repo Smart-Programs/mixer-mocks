@@ -1,3 +1,5 @@
+const { broadcastMessage } = require('../../../helpers')
+
 module.exports = function handleClearMessages (client, data) {
   if (
     !client.connection ||
@@ -20,6 +22,23 @@ module.exports = function handleClearMessages (client, data) {
         JSON.stringify({ type: 'reply', error: 'UFUCKEDUP', id: data.id })
       )
     } else {
+      broadcastMessage(
+        ws,
+        JSON.stringify({
+          type: 'event',
+          event: 'ClearMessages',
+          data: {
+            clearer: {
+              user_name: client.connection.user_name,
+              user_id: client.connection.user_id,
+              user_roles: ['Mod', 'User'],
+              user_level: Math.floor(Math.random() * 99 + 1)
+            }
+          }
+        }),
+        client.connection.channel
+      )
+
       client.send(
         JSON.stringify({
           type: 'reply',
