@@ -1,6 +1,6 @@
 const { broadcastMessage } = require('../../../helpers')
 
-module.exports = function handlePurge (client, data) {
+module.exports = function handlePurge (client, data, ws) {
   if (
     !client.connection ||
     !client.connection.channel ||

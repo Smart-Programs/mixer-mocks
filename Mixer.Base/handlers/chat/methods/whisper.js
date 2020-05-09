@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid')
 
 const { getRandomUsername, broadcastMessage } = require('../../../helpers')
 
-module.exports = function handleWhisper (client, data) {
+module.exports = function handleWhisper (client, data, ws) {
   if (
     !client.connection ||
     !client.connection.channel ||

@@ -1,6 +1,6 @@
 const { broadcastMessage, getRandomUsername } = require('../../../helpers')
 
-module.exports = function handleTimeout (client, data) {
+module.exports = function handleTimeout (client, data, ws) {
   if (
     !client.connection ||
     !client.connection.channel ||
