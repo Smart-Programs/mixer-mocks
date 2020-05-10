@@ -334,7 +334,7 @@ module.exports = function handleFakeEvent (client, data, ws) {
 
               sub.since = since.toISOString()
               sub.until = new Date(
-                since.valueOf() * 1000 * 60 * 60 * 24 * 30 * addMonths
+                since.valueOf() + 1000 * 60 * 60 * 24 * 30 * addMonths
               ).toISOString()
               sub.totalMonths = addMonths
 

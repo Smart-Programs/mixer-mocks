@@ -5,27 +5,29 @@ import Socket from './helpers/sockets'
 
 function App () {
   const [chatSockets, setChatSockets] = useState({})
+
   const [constellationSocket, setConstellationSocket] = useState()
+  const [constellationState, setConstellationState] = useState(false)
 
   useEffect(() => {
     if (!constellationSocket) {
       console.log('ConstellationSocket Creating')
 
-      const newConstellationSocket = Socket(
-        'ws://localhost:8050',
-        JSON.stringify({
-          type: 'method',
-          method: 'liveSubscribe',
-          params: { events: ['channel:111:update'] },
-          id: 0
-        })
-      )
+      const newConstellationSocket = Socket('ws://localhost:8050')
 
       setConstellationSocket(newConstellationSocket)
 
-      newConstellationSocket.addEventListener('open', ({ detail }) => {
-        console.log('OPEN', detail)
-      })
+      newConstellationSocket.addEventListener('open', ({ detail }) =>
+        setConstellationState(true)
+      )
+
+      newConstellationSocket.addEventListener('reconnecting', ({ detail }) =>
+        setConstellationState(false)
+      )
+
+      newConstellationSocket.addEventListener('close', ({ detail }) =>
+        setConstellationState(false)
+      )
 
       newConstellationSocket.addEventListener('message', ({ detail }) => {
         console.log('MESSAGE', detail)
@@ -65,12 +67,11 @@ function App () {
         return newState
       })
 
-      newChatSocket.addEventListener('open', ({ detail }) => {
-        console.log('OPEN', detail)
+      newChatSocket.addEventListener('open', ({ detail }) =>
         setChatSockets(prev => {
           return { ...prev }
         })
-      })
+      )
 
       newChatSocket.addEventListener('message', ({ detail }) => {
         console.log('MESSAGE', detail)
@@ -80,24 +81,24 @@ function App () {
         console.log('ERROR', detail)
       })
 
-      newChatSocket.addEventListener('reconnecting', ({ detail }) => {
-        console.log('RECONNECTING', detail)
+      newChatSocket.addEventListener('reconnecting', ({ detail }) =>
         setChatSockets(prev => {
           return { ...prev }
         })
-      })
+      )
 
-      newChatSocket.addEventListener('close', ({ detail }) => {
-        console.log('CLOSE', detail)
+      newChatSocket.addEventListener('close', ({ detail }) =>
         setChatSockets(prev => {
           return { ...prev }
         })
-      })
+      )
     }
   }
 
   const [inputValue, setInputValue] = useState(0)
   const [chatMessages, setChatMessages] = useState({})
+
+  const [constellationChannel, setConstellationChannel] = useState(0)
 
   return (
     <div className='App'>
@@ -112,10 +113,19 @@ function App () {
             onChange={e => {
               setInputValue(e.target.value)
             }}
+            onKeyPress={e => {
+              if (e.keyCode === 'Enter') {
+                createChatSocket(inputValue)
+                setInputValue(0)
+              }
+            }}
           />
           <button
             style={{ marginLeft: '10px' }}
-            onClick={e => createChatSocket(inputValue)}
+            onClick={e => {
+              createChatSocket(inputValue)
+              setInputValue(0)
+            }}
           >
             Connect to chat
           </button>
@@ -203,26 +213,208 @@ function App () {
         )}
       </div>
 
-      <div className='connected-chats' style={{ margin: '50px 0' }}>
+      <div className='constellation' style={{ margin: '50px 0' }}>
         <h3>
-          Constellation ({constellationSocket ? 'Connected' : 'Not Connected'}):
+          Constellation (
+          {constellationSocket && constellationSocket.getConnectedState()
+            ? 'Connected'
+            : 'Not Connected'}
+          ):
         </h3>
-        <button
-          onClick={() => {
-            if (constellationSocket) {
-              constellationSocket.sendPacket(
-                JSON.stringify({
-                  type: 'method',
-                  method: 'fakeEvent',
-                  event: 'channel:111:update',
-                  id: 1
-                })
-              )
-            }
-          }}
-        >
-          Send Fake Event
-        </button>
+
+        <div>
+          <p>Channel Events</p>
+          Channel ID:{' '}
+          <input
+            style={{ marginLeft: '10px' }}
+            type='number'
+            value={constellationChannel}
+            onChange={e => {
+              setConstellationChannel(e.target.value)
+            }}
+          />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: '25px',
+              padding: '0 10%',
+              flexWrap: 'wrap'
+            }}
+          >
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (
+                  constellationSocket &&
+                  constellationSocket.getConnectedState() === true
+                ) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:broadcast`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Live State
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (
+                  constellationSocket &&
+                  constellationSocket.getConnectedState() === true
+                ) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:update`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Update
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (
+                  constellationSocket &&
+                  constellationSocket.getConnectedState() === true
+                ) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:subscribed`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel New Subscriber
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (constellationState === true) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:resubscribed`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Resubscriber
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (constellationState === true) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:resubShared`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Resub Shared
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (constellationState === true) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:subscriptionGifted`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Gifted Subscriber
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (constellationState === true) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:followed`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Follow
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (constellationState === true) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:hosted`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Host
+            </button>
+
+            <button
+              style={{ marginLeft: '10px', marginTop: '25px' }}
+              onClick={() => {
+                if (constellationState === true) {
+                  constellationSocket.sendPacket(
+                    JSON.stringify({
+                      type: 'method',
+                      method: 'fakeEvent',
+                      event: `channel:${constellationChannel}:unhosted`,
+                      id: 1
+                    })
+                  )
+                }
+              }}
+            >
+              Send Channel Unhost
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
