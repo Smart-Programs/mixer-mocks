@@ -39,7 +39,7 @@ module.exports = function handleWhisper (client, data, ws) {
         user_name: client.connection.user_name,
         user_id: client.connection.user_id,
         user_level: Math.floor(Math.random() * 99 + 1),
-        user_avatar: 'https://uploads.mixer.com/avatar/kbqbdbuz-85878.jpg',
+        user_avatar: `https://api.adorable.io/avatars/250/${client.connection.user_id}`,
         user_roles: client.connection.auth.roles,
         message: {
           message: [{ type: 'text', data: message, text: message }],

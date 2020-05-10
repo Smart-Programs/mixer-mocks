@@ -4,7 +4,8 @@ const ws = new WebSocket.Server({ port: 8050 })
 const {
   handleLiveSubscribe,
   handleLiveUnsubscribe,
-  handlePing
+  handlePing,
+  handleFakeEvent
 } = require('../handlers/constellation')
 
 ws.on('connection', (client, request) => {
@@ -24,6 +25,10 @@ ws.on('connection', (client, request) => {
           case 'ping':
             console.log('Constellation method handlePing', data)
             handlePing(client, data)
+            break
+          case 'fakeEvent':
+            console.log('Constellation method handleFakeEvent', data)
+            handleFakeEvent(client, data, ws)
             break
           default:
             console.log('Constellation method switch-default', data)
