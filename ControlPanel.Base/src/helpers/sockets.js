@@ -109,6 +109,10 @@ class SocketConnection extends EventTarget {
     }
   }
 
+  getConnectedState () {
+    return this.ws.readyState === WebSocket.OPEN
+  }
+
   close () {
     this.shouldClose = true
 
@@ -116,16 +120,16 @@ class SocketConnection extends EventTarget {
   }
 }
 
-module.exports = function Sockets (url, onOpen) {
-  if (Sockets.instances && Sockets.instances.has(url))
-    return Sockets.instances.get(url)
+module.exports = function Sockets (url, onOpen, identifier) {
+  if (Sockets.instances && Sockets.instances.has(identifier || url))
+    return Sockets.instances.get(identifier || url)
 
   if (Sockets.instances)
-    Sockets.instances.set(url, new SocketConnection(url, onOpen))
+    Sockets.instances.set(identifier || url, new SocketConnection(url, onOpen))
   else {
     Sockets.instances = new Map()
-    Sockets.instances.set(url, new SocketConnection(url, onOpen))
+    Sockets.instances.set(identifier || url, new SocketConnection(url, onOpen))
   }
 
-  return Sockets.instances.get(url)
+  return Sockets.instances.get(identifier || url)
 }

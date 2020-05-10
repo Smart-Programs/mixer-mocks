@@ -5,7 +5,7 @@ const { broadcastMessage } = require('../../../helpers')
 module.exports = function handleMsg (client, data, ws) {
   if (
     !client.connection ||
-    !client.connection.channel ||
+    typeof client.connection.channel !== 'number' ||
     !client.connection.auth ||
     client.connection.auth.authenticated !== true
   ) {
