@@ -140,6 +140,16 @@ module.exports = function handleFakeEvent (client, data, ws) {
               online: !!Math.round(Math.random())
             }
 
+            broadcastMessage(
+              ws,
+              JSON.stringify({
+                data: broadcast,
+                type: 'event',
+                event: `channel:${parts[1]}:update`
+              }),
+              [`channel:${parts[1]}:update`]
+            )
+
             if (broadcast.online) broadcast.id = uuidv4()
 
             broadcastMessage(
@@ -360,6 +370,38 @@ module.exports = function handleFakeEvent (client, data, ws) {
               ws,
               JSON.stringify({
                 data: sub,
+                type: 'event',
+                event: event
+              }),
+              [event]
+            )
+            client.send(
+              JSON.stringify({
+                type: 'reply',
+                result: null,
+                id: data.id
+              })
+            )
+          } else if (valid === 'channel:{id}:update') {
+            const keys = ['viewersCurrent', 'name', 'typeId', 'numFollowers']
+
+            const toChange = keys[Math.floor(Math.random() * keys.length)]
+
+            let sendData = {}
+
+            if (toChange === 'viewersCurrent')
+              sendData.viewersCurrent = Math.floor(Math.random() * 1000 + 5)
+            else if (toChange === 'name')
+              sendData.name = 'Testing A Title Change'
+            else if (toChange === 'typeId')
+              sendData.typeId = Math.floor(Math.random() * 50000 + 500)
+            else if (toChange === 'numFollowers')
+              sendData.numFollowers = followers
+
+            broadcastMessage(
+              ws,
+              JSON.stringify({
+                data: sendData,
                 type: 'event',
                 event: event
               }),

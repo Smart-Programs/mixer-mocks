@@ -16,7 +16,7 @@ function App () {
         JSON.stringify({
           type: 'method',
           method: 'liveSubscribe',
-          params: { events: ['channel:111:subscriptionGifted'] },
+          params: { events: ['channel:111:update'] },
           id: 0
         })
       )
@@ -96,7 +96,7 @@ function App () {
               JSON.stringify({
                 type: 'method',
                 method: 'fakeEvent',
-                event: 'channel:111:subscriptionGifted',
+                event: 'channel:111:update',
                 id: 1
               })
             )
