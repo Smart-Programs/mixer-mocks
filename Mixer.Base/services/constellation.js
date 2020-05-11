@@ -8,7 +8,15 @@ const {
   handleFakeEvent
 } = require('../handlers/constellation')
 
+const { parse } = require('querystring')
+
 ws.on('connection', (client, request) => {
+  let query = {}
+
+  if (request.url.includes('?')) query = parse(request.url.split('?')[1])
+
+  client.connectedTo = request.headers['mock-auth'] || query['mock-auth']
+
   client.on('message', message => {
     try {
       const data = JSON.parse(message)

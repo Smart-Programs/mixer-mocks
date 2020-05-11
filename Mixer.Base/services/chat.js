@@ -15,8 +15,14 @@ const {
 
 const { broadcastMessage } = require('../helpers')
 
+const { parse } = require('querystring')
+
 ws.on('connection', (client, request) => {
-  client.connectedTo = request.headers.authorization
+  let query = {}
+
+  if (request.url.includes('?')) query = parse(request.url.split('?')[1])
+
+  client.connectedTo = request.headers['mock-auth'] || query['mock-auth']
 
   client.send(
     JSON.stringify({
