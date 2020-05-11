@@ -85,7 +85,8 @@ module.exports = function handleAuth (client, data, ws) {
               id: client.connection.user_id
             }
           }),
-          client.connection.channel
+          client.connection.channel,
+          client.connectedTo
         )
 
         client.send(

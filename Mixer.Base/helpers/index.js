@@ -16,9 +16,13 @@ module.exports.getRandomUsername = () => {
   return names[Math.floor(Math.random() * names.length)]
 }
 
-module.exports.broadcastMessage = (ws, data, channel) => {
+module.exports.broadcastMessage = (ws, data, channel, connectedTo) => {
   ws.clients.forEach(client => {
-    if (channel && client.readyState === 1) {
+    if (
+      channel &&
+      client.readyState === 1 &&
+      client.connectedTo === connectedTo
+    ) {
       if (
         typeof channel === 'string' &&
         client.connection &&
@@ -32,6 +36,7 @@ module.exports.broadcastMessage = (ws, data, channel) => {
         client.events.includes(channel[0])
       )
         client.send(data)
-    } else if (client.readyState === 1) client.send(data)
+    } else if (client.readyState === 1 && client.connectedTo === connectedTo)
+      client.send(data)
   })
 }

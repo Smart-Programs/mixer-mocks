@@ -50,7 +50,8 @@ module.exports = function handleTimeout (client, data, ws) {
             duration: Math.floor(Math.random() * 1000 + 30)
           }
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
 
       broadcastMessage(
@@ -75,7 +76,8 @@ module.exports = function handleTimeout (client, data, ws) {
             }
           }
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
 
       client.send(

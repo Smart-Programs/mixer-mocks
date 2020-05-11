@@ -36,7 +36,8 @@ module.exports = function handleClearMessages (client, data, ws) {
             }
           }
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
 
       client.send(

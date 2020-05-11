@@ -47,7 +47,8 @@ module.exports = function handleMsg (client, data, ws) {
           event: 'ChatMessage',
           data: sendMessage
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
 
       client.send(

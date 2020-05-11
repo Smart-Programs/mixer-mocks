@@ -26,7 +26,12 @@ module.exports = function handleFakeEvent (client, data, ws) {
         toSend.message &&
         typeof toSend.message === 'string'
       ) {
-        broadcastMessage(ws, JSON.stringify(toSend), [event])
+        broadcastMessage(
+          ws,
+          JSON.stringify(toSend),
+          [event],
+          client.connectedTo
+        )
         client.send(
           JSON.stringify({
             type: 'reply',
@@ -147,7 +152,8 @@ module.exports = function handleFakeEvent (client, data, ws) {
                 type: 'event',
                 event: `channel:${parts[1]}:update`
               }),
-              [`channel:${parts[1]}:update`]
+              [`channel:${parts[1]}:update`],
+              client.connectedTo
             )
 
             if (broadcast.online) broadcast.id = uuidv4()
@@ -159,7 +165,8 @@ module.exports = function handleFakeEvent (client, data, ws) {
                 type: 'event',
                 event: event
               }),
-              [event]
+              [event],
+              client.connectedTo
             )
             client.send(
               JSON.stringify({
@@ -229,7 +236,8 @@ module.exports = function handleFakeEvent (client, data, ws) {
                 type: 'event',
                 event: event
               }),
-              [event]
+              [event],
+              client.connectedTo
             )
             client.send(
               JSON.stringify({
@@ -290,7 +298,8 @@ module.exports = function handleFakeEvent (client, data, ws) {
                 type: 'event',
                 event: event
               }),
-              [event]
+              [event],
+              client.connectedTo
             )
             client.send(
               JSON.stringify({
@@ -349,7 +358,8 @@ module.exports = function handleFakeEvent (client, data, ws) {
                 type: 'event',
                 event: event
               }),
-              [event]
+              [event],
+              client.connectedTo
             )
             client.send(
               JSON.stringify({
@@ -373,7 +383,8 @@ module.exports = function handleFakeEvent (client, data, ws) {
                 type: 'event',
                 event: event
               }),
-              [event]
+              [event],
+              client.connectedTo
             )
             client.send(
               JSON.stringify({
@@ -405,7 +416,8 @@ module.exports = function handleFakeEvent (client, data, ws) {
                 type: 'event',
                 event: event
               }),
-              [event]
+              [event],
+              client.connectedTo
             )
             client.send(
               JSON.stringify({

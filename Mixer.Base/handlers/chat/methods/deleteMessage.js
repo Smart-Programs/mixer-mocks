@@ -37,7 +37,8 @@ module.exports = function handleDeleteMessage (client, data, ws) {
             id: args[0]
           }
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
 
       client.send(

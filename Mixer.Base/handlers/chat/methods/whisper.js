@@ -57,7 +57,8 @@ module.exports = function handleWhisper (client, data, ws) {
           event: 'ChatMessage',
           data: sendWhisper
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
 
       client.send(

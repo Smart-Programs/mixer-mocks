@@ -49,7 +49,8 @@ module.exports = function handlePurge (client, data, ws) {
             }
           }
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
 
       client.send(

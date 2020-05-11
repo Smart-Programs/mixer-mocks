@@ -15,7 +15,9 @@ const {
 
 const { broadcastMessage } = require('../helpers')
 
-ws.on('connection', client => {
+ws.on('connection', (client, request) => {
+  client.connectedTo = request.headers.authorization
+
   client.send(
     JSON.stringify({
       type: 'event',
@@ -121,7 +123,8 @@ ws.on('connection', client => {
             id: client.connection.user_id
           }
         }),
-        client.connection.channel
+        client.connection.channel,
+        client.connectedTo
       )
     }
   })
