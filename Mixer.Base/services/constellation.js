@@ -17,6 +17,14 @@ ws.on('connection', (client, request) => {
 
   client.connectedTo = request.headers['mock-auth'] || query['mock-auth']
 
+  client.send(
+    JSON.stringify({
+      type: 'event',
+      event: 'hello',
+      data: { authenticated: !!request.headers.authorization }
+    })
+  )
+
   client.on('message', message => {
     try {
       const data = JSON.parse(message)
